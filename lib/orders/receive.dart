@@ -25,7 +25,7 @@ class OrderScreen extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No orders found.'));
+            return Center(child: Text(snapshot.error.toString()));
           }
           final orders = snapshot.data!;
 
