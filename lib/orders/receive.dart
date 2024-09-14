@@ -1,10 +1,8 @@
-import 'dart:async'; // For StreamController
-
 import 'package:flutter/material.dart';
 import 'package:taxi_food_admin/orders/OrderService.dart';
 
-import 'Orders.dart';
 import 'OrderCard.dart';
+import 'Orders.dart';
 
 class OrderScreen extends StatelessWidget {
   final OrderService _orderService = OrderService();
@@ -14,7 +12,11 @@ class OrderScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: Text('Orders'),
+        backgroundColor: Color(0xff2A5270),
+        title: Text(
+          'Orders',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: StreamBuilder<List<Order>>(
         stream: _orderService.fetchOrders(),

@@ -6,17 +6,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 
-class FoodPage extends StatefulWidget {
-  final String restaurantId;
-  final String foodTypeId;
-
-  FoodPage({required this.restaurantId, required this.foodTypeId});
+class FoodPage3 extends StatefulWidget {
+  // FoodPage({required this.restaurantId, required this.foodTypeId});
 
   @override
   _FoodPageState createState() => _FoodPageState();
 }
 
-class _FoodPageState extends State<FoodPage> {
+class _FoodPageState extends State<FoodPage3> {
   bool isVeg = false;
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -47,7 +44,7 @@ class _FoodPageState extends State<FoodPage> {
   Future<void> _uploadImageToFirebaseWeb(
       Uint8List imageBytes, String fileName) async {
     Reference storageRef =
-        FirebaseStorage.instance.ref().child('restaurant_banners/$fileName');
+        FirebaseStorage.instance.ref().child('fruits/$fileName');
     UploadTask uploadTask = storageRef.putData(imageBytes);
     TaskSnapshot snapshot = await uploadTask;
     _bannerImageUrl = await snapshot.ref.getDownloadURL();
@@ -59,28 +56,13 @@ class _FoodPageState extends State<FoodPage> {
 
   Future<void> addFood(
       String name, String price, String description, bool isVeg2) async {
-    // if (_bannerImage != null) {
-    //   _bannerUrl = await uploadBanner(_webImage!);
-    // }
-
-    print(
-        "${widget.restaurantId}-----${widget.foodTypeId}---${name}____${_bannerImageUrl}");
-
-    await firestore
-        .collection('restaurants')
-        .doc(widget.restaurantId)
-        .collection('types_of_food')
-        .doc(widget.foodTypeId)
-        .collection('foods')
-        .doc(name)
-        .set({
+    await firestore.collection('fruits_vegetables').doc(name).set({
       'banner': _bannerImageUrl ?? '', // Save the banner URL
       'name': name.toString(),
       'price': price.toString(),
-      'description': description.toString(),
+      'weight': description.toString(),
       'rate': '0.0',
       'rate_count': 0,
-      'is_veg': isVeg2,
     });
 
     setState(() {
@@ -103,7 +85,7 @@ class _FoodPageState extends State<FoodPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Add Restaurant"),
+          title: Text("Add Fruit"),
           insetPadding: EdgeInsets.symmetric(horizontal: 100, vertical: 50),
           content: Center(
             child: SingleChildScrollView(
@@ -143,7 +125,7 @@ class _FoodPageState extends State<FoodPage> {
                     child: TextField(
                       controller: foodNameController,
                       decoration: InputDecoration(
-                        labelText: 'Food Name',
+                        labelText: 'Fruit Name',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -156,7 +138,7 @@ class _FoodPageState extends State<FoodPage> {
                     child: TextField(
                       controller: foodPriceController,
                       decoration: InputDecoration(
-                        labelText: 'Food Price',
+                        labelText: 'Weight',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -169,27 +151,12 @@ class _FoodPageState extends State<FoodPage> {
                     child: TextField(
                       controller: foodDescriptionController,
                       decoration: InputDecoration(
-                        labelText: 'Food Description',
+                        labelText: '',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15.0, horizontal: 50),
-                    child: StatefulBuilder(builder: (context, setState) {
-                      return SwitchListTile(
-                        title: Text('For Veg'),
-                        value: isVeg,
-                        onChanged: (bool value) {
-                          setState(() {
-                            isVeg = value;
-                          });
-                        },
-                      );
-                    }),
                   ),
                   Container(
                     width: size.width,
@@ -253,17 +220,13 @@ class _FoodPageState extends State<FoodPage> {
     );
   }
 
-  /// Add Food Document to Firestore
-
-  /// Edit Food Document
   void _editFood(String id, String name, String price, String description,
-      bool isVeg, String banner, String rate, String rate_count) {
+      String banner, String rate, String rate_count) {
     final TextEditingController foodNameController = TextEditingController();
     final TextEditingController foodPriceController = TextEditingController();
     final TextEditingController foodDescriptionController =
         TextEditingController();
 
-    // bool isVeg = false;
     var size = MediaQuery.of(context).size;
     foodNameController.text = name;
     foodPriceController.text = price.toString();
@@ -274,7 +237,7 @@ class _FoodPageState extends State<FoodPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Edit Food"),
+          title: Text("Edit Fruit"),
           content: SingleChildScrollView(
             child: Column(
               children: [
@@ -319,27 +282,12 @@ class _FoodPageState extends State<FoodPage> {
                   child: TextField(
                     controller: foodDescriptionController,
                     decoration: InputDecoration(
-                      labelText: 'Food Description',
+                      labelText: 'Food weight',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 15.0, horizontal: 50),
-                  child: StatefulBuilder(builder: (context, setState) {
-                    return SwitchListTile(
-                      title: Text('For Veg'),
-                      value: isVeg,
-                      onChanged: (bool value) {
-                        setState(() {
-                          isVeg = value;
-                        });
-                      },
-                    );
-                  }),
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(
@@ -379,20 +327,16 @@ class _FoodPageState extends State<FoodPage> {
                             foodPriceController.text.isNotEmpty &&
                             _bannerImageUrl!.isNotEmpty) {
                           firestore
-                              .collection('restaurants')
-                              .doc(widget.restaurantId)
-                              .collection('types_of_food')
-                              .doc(widget.foodTypeId)
-                              .collection('foods')
+                              .collection('fruits_vegetables')
                               .doc(id)
                               .update({
-                            'banner': _bannerImageUrl,
-                            'name': foodNameController.text,
-                            'price': foodPriceController.text,
-                            'description': foodDescriptionController.text,
-                            'rate': rate,
-                            'rate_count': rate_count,
-                            'is_veg': isVeg,
+                            'banner':
+                                _bannerImageUrl ?? '', // Save the banner URL
+                            'name': foodNameController.text.toString(),
+                            'price': foodPriceController.toString(),
+                            'weight': foodDescriptionController.toString(),
+                            'rate': '0.0',
+                            'rate_count': 0,
                           });
                           Navigator.pop(context);
                         } else {
@@ -416,14 +360,7 @@ class _FoodPageState extends State<FoodPage> {
 
   /// Delete Food Document
   void _deleteFood(String id) {
-    firestore
-        .collection('restaurants')
-        .doc(widget.restaurantId)
-        .collection('types_of_food')
-        .doc(widget.foodTypeId)
-        .collection('foods')
-        .doc(id)
-        .delete();
+    firestore.collection('fruits_vegetables').doc(id).delete();
   }
 
   @override
@@ -479,13 +416,7 @@ class _FoodPageState extends State<FoodPage> {
           ),
           Expanded(
             child: StreamBuilder(
-              stream: firestore
-                  .collection('restaurants')
-                  .doc(widget.restaurantId)
-                  .collection('types_of_food')
-                  .doc(widget.foodTypeId)
-                  .collection('foods')
-                  .snapshots(),
+              stream: firestore.collection('fruits_vegetables').snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return Text('Loading...');
                 return ListView.builder(
@@ -532,8 +463,7 @@ class _FoodPageState extends State<FoodPage> {
                                       food.id,
                                       food['name'],
                                       food['price'],
-                                      food['description'],
-                                      food['is_veg'],
+                                      food['weight'],
                                       food['banner'],
                                       food['rate'].toString(),
                                       food['rate_count'].toString()),

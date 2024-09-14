@@ -6,16 +6,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 
-class FoodPage2 extends StatefulWidget {
-  final String foodTypeId;
-
-  FoodPage2({required this.foodTypeId});
+class FoodPage4 extends StatefulWidget {
+  // final String foodTypeId;
 
   @override
   _FoodPageState createState() => _FoodPageState();
 }
 
-class _FoodPageState extends State<FoodPage2> {
+class _FoodPageState extends State<FoodPage4> {
   bool isVeg = false;
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -45,9 +43,8 @@ class _FoodPageState extends State<FoodPage2> {
 
   Future<void> _uploadImageToFirebaseWeb(
       Uint8List imageBytes, String fileName) async {
-    Reference storageRef = FirebaseStorage.instance
-        .ref()
-        .child('main_restaurant_banners/$fileName');
+    Reference storageRef =
+        FirebaseStorage.instance.ref().child('grossary/$fileName');
     UploadTask uploadTask = storageRef.putData(imageBytes);
     TaskSnapshot snapshot = await uploadTask;
     _bannerImageUrl = await snapshot.ref.getDownloadURL();
@@ -66,12 +63,7 @@ class _FoodPageState extends State<FoodPage2> {
     // print(
     //     "${widget.restaurantId}-----${widget.foodTypeId}---${name}____${_bannerImageUrl}");
 
-    await firestore
-        .collection('main_restaurants')
-        .doc(widget.foodTypeId)
-        .collection('foods')
-        .doc(name)
-        .set({
+    await firestore.collection('grossary').doc(name).set({
       'banner': _bannerImageUrl ?? '', // Save the banner URL
       'name': name.toString(),
       'price': price.toString(),
@@ -101,7 +93,7 @@ class _FoodPageState extends State<FoodPage2> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Add Restaurant"),
+          title: Text("Add Product"),
           insetPadding: EdgeInsets.symmetric(horizontal: 100, vertical: 50),
           content: Center(
             child: SingleChildScrollView(
@@ -141,7 +133,7 @@ class _FoodPageState extends State<FoodPage2> {
                     child: TextField(
                       controller: foodNameController,
                       decoration: InputDecoration(
-                        labelText: 'Food Name',
+                        labelText: 'Product Name',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -154,7 +146,7 @@ class _FoodPageState extends State<FoodPage2> {
                     child: TextField(
                       controller: foodPriceController,
                       decoration: InputDecoration(
-                        labelText: 'Food Price',
+                        labelText: 'Product Price',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -167,7 +159,7 @@ class _FoodPageState extends State<FoodPage2> {
                     child: TextField(
                       controller: foodDescriptionController,
                       decoration: InputDecoration(
-                        labelText: 'Food Description',
+                        labelText: 'Product Description',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -232,7 +224,7 @@ class _FoodPageState extends State<FoodPage2> {
                       label: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15.0),
                         child: Text(
-                          "ADD FOOD",
+                          "ADD PRODUCT",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 19,
@@ -272,7 +264,7 @@ class _FoodPageState extends State<FoodPage2> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Edit Food"),
+          title: Text("Edit Product"),
           content: SingleChildScrollView(
             child: Column(
               children: [
@@ -291,7 +283,7 @@ class _FoodPageState extends State<FoodPage2> {
                   child: TextField(
                     controller: foodNameController,
                     decoration: InputDecoration(
-                      labelText: 'Food Name',
+                      labelText: 'Product Name',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -304,7 +296,7 @@ class _FoodPageState extends State<FoodPage2> {
                   child: TextField(
                     controller: foodPriceController,
                     decoration: InputDecoration(
-                      labelText: 'Food Price',
+                      labelText: 'Product Price',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -317,7 +309,7 @@ class _FoodPageState extends State<FoodPage2> {
                   child: TextField(
                     controller: foodDescriptionController,
                     decoration: InputDecoration(
-                      labelText: 'Food Description',
+                      labelText: 'Product Description',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -376,12 +368,7 @@ class _FoodPageState extends State<FoodPage2> {
                             foodDescriptionController.text.isNotEmpty &&
                             foodPriceController.text.isNotEmpty &&
                             _bannerImageUrl!.isNotEmpty) {
-                          firestore
-                              .collection('main_restaurants')
-                              .doc(widget.foodTypeId)
-                              .collection('foods')
-                              .doc(id)
-                              .update({
+                          firestore.collection('grossary').doc(id).update({
                             'banner': _bannerImageUrl,
                             'name': foodNameController.text,
                             'price': foodPriceController.text,
@@ -412,12 +399,7 @@ class _FoodPageState extends State<FoodPage2> {
 
   /// Delete Food Document
   void _deleteFood(String id) {
-    firestore
-        .collection('main_restaurants')
-        .doc(widget.foodTypeId)
-        .collection('foods')
-        .doc(id)
-        .delete();
+    firestore.collection('grossary').doc(id).delete();
   }
 
   @override
@@ -427,7 +409,7 @@ class _FoodPageState extends State<FoodPage2> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
-          "Foods",
+          "Products",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.indigoAccent,
@@ -461,7 +443,7 @@ class _FoodPageState extends State<FoodPage2> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
                 child: Text(
-                  "ADD FOOD",
+                  "ADD PRODUCT",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 19,
@@ -473,11 +455,7 @@ class _FoodPageState extends State<FoodPage2> {
           ),
           Expanded(
             child: StreamBuilder(
-              stream: firestore
-                  .collection('main_restaurants')
-                  .doc(widget.foodTypeId)
-                  .collection('foods')
-                  .snapshots(),
+              stream: firestore.collection('grossary').snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return Text('Loading...');
                 return ListView.builder(

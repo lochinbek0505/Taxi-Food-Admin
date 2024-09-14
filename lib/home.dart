@@ -10,7 +10,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List _pages = [ControlPage(), OrderScreen()];
+  List _pages = [OrderScreen(), ControlPage()];
 
   int _selectedIndex = 0;
 
