@@ -1,0 +1,39 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "taxifood-f75ec",
+          "appId": "1:1073312766485:android:0c1f6cb4043392cdb4cc1c",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "taxifood-f75ec",
+          "configurations": {
+            "android": "1:1073312766485:android:0c1f6cb4043392cdb4cc1c",
+            "ios": "1:1073312766485:ios:f63694b2f9c5125fb4cc1c",
+            "macos": "1:1073312766485:ios:f63694b2f9c5125fb4cc1c",
+            "web": "1:1073312766485:web:8c36d1623988fe31b4cc1c",
+            "windows": "1:1073312766485:web:df8e67f85e6a4c72b4cc1c"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
