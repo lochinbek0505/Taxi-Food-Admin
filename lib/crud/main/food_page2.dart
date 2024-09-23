@@ -57,8 +57,8 @@ class _FoodPageState extends State<FoodPage2> {
     setState(() {});
   }
 
-  Future<void> addFood(
-      String name, String price, String description, bool isVeg2) async {
+  Future<void> addFood(String name, String price, String description,
+      bool isVeg2, String img) async {
     // if (_bannerImage != null) {
     //   _bannerUrl = await uploadBanner(_webImage!);
     // }
@@ -72,13 +72,26 @@ class _FoodPageState extends State<FoodPage2> {
         .collection('foods')
         .doc(name)
         .set({
-      'banner': _bannerImageUrl ?? '', // Save the banner URL
+      'banner': img ?? '', // Save the banner URL
       'name': name.toString(),
       'price': price.toString(),
       'description': description.toString(),
       'rate': '0.0',
       'rate_count': 0,
-      'is_veg': isVeg2,
+      'cat_id': widget.foodTypeId,
+      'veg': isVeg2,
+    });
+
+    await firestore.collection('main_foods').doc(name).set({
+      'banner': img ?? '', // Save the banner URL
+      'name': name.toString(),
+      'price': price.toString(),
+      'description': description.toString(),
+      'rate': '0.0',
+      'rate_count': 0,
+      'cat_id': widget.foodTypeId,
+
+      'veg': isVeg2,
     });
 
     setState(() {
@@ -214,7 +227,8 @@ class _FoodPageState extends State<FoodPage2> {
                               foodNameController.text,
                               foodPriceController.text,
                               foodDescriptionController.text,
-                              isVeg);
+                              isVeg,
+                              _bannerImageUrl!);
 
                           foodNameController.clear();
                           foodDescriptionController.clear();
@@ -376,6 +390,7 @@ class _FoodPageState extends State<FoodPage2> {
                             foodDescriptionController.text.isNotEmpty &&
                             foodPriceController.text.isNotEmpty &&
                             _bannerImageUrl!.isNotEmpty) {
+                          // main_foods
                           firestore
                               .collection('main_restaurants')
                               .doc(widget.foodTypeId)
@@ -387,9 +402,22 @@ class _FoodPageState extends State<FoodPage2> {
                             'price': foodPriceController.text,
                             'description': foodDescriptionController.text,
                             'rate': rate,
-                            'rate_count': rate_count,
-                            'is_veg': isVeg,
+                            'cat_id': widget.foodTypeId,
+                            'rate_count': int.parse(rate_count),
+                            'veg': isVeg,
                           });
+
+                          firestore.collection('main_foods').doc(id).update({
+                            'banner': banner,
+                            'name': foodNameController.text,
+                            'price': foodPriceController.text,
+                            'description': foodDescriptionController.text,
+                            'rate': rate,
+                            'rate_count': int.parse(rate_count),
+                            'cat_id': widget.foodTypeId,
+                            'veg': isVeg,
+                          });
+
                           Navigator.pop(context);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -418,6 +446,7 @@ class _FoodPageState extends State<FoodPage2> {
         .collection('foods')
         .doc(id)
         .delete();
+    firestore.collection('main_foods').doc(id).delete();
   }
 
   @override
@@ -525,7 +554,7 @@ class _FoodPageState extends State<FoodPage2> {
                                       food['name'],
                                       food['price'],
                                       food['description'],
-                                      food['is_veg'],
+                                      food['veg'],
                                       food['banner'],
                                       food['rate'].toString(),
                                       food['rate_count'].toString()),

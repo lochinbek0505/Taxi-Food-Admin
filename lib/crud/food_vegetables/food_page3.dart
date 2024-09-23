@@ -136,7 +136,7 @@ class _FoodPageState extends State<FoodPage3> {
                     padding: const EdgeInsets.symmetric(
                         vertical: 15.0, horizontal: 50),
                     child: TextField(
-                      controller: foodPriceController,
+                      controller: foodDescriptionController,
                       decoration: InputDecoration(
                         labelText: 'Weight',
                         border: OutlineInputBorder(
@@ -149,9 +149,9 @@ class _FoodPageState extends State<FoodPage3> {
                     padding: const EdgeInsets.symmetric(
                         vertical: 15.0, horizontal: 50),
                     child: TextField(
-                      controller: foodDescriptionController,
+                      controller: foodPriceController,
                       decoration: InputDecoration(
-                        labelText: '',
+                        labelText: 'Fruit Price',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

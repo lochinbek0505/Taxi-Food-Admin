@@ -54,15 +54,18 @@ class _RestaurantPageState extends State<RestaurantPage> {
   Future<void> addRestaurant(
     String name,
     String description,
-    String lenght,
     String location,
+    String latitude,
+    String longtitude,
   ) async {
     await firestore.collection('restaurants').doc(name).set({
       'name': name,
       'location': location,
       'banner': _bannerImageUrl,
-      'lenght': lenght,
+      'latitude': latitude,
+      'longtitude': longtitude,
       'description': description,
+      'dictance': 0,
       'rate': '0.0',
       'rate_count': '0',
     });
@@ -76,8 +79,8 @@ class _RestaurantPageState extends State<RestaurantPage> {
         TextEditingController();
     final TextEditingController description = TextEditingController();
     final TextEditingController lenght = TextEditingController();
-    final TextEditingController rate = TextEditingController();
-    final TextEditingController rate_count = TextEditingController();
+    final TextEditingController latitute = TextEditingController();
+    final TextEditingController longtute = TextEditingController();
 
     var size = MediaQuery.of(context).size;
 
@@ -163,9 +166,22 @@ class _RestaurantPageState extends State<RestaurantPage> {
                   padding: const EdgeInsets.symmetric(
                       vertical: 15.0, horizontal: 50),
                   child: TextField(
-                    controller: lenght,
+                    controller: latitute,
                     decoration: InputDecoration(
-                      labelText: 'Lenght',
+                      labelText: 'Latitude',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 50),
+                  child: TextField(
+                    controller: longtute,
+                    decoration: InputDecoration(
+                      labelText: 'Longitude',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -189,14 +205,17 @@ class _RestaurantPageState extends State<RestaurantPage> {
                     onPressed: () {
                       if (restaurantLocationController.text.isNotEmpty &&
                           restaurantNameController.text.isNotEmpty &&
-                          lenght.text.isNotEmpty &&
+                          latitute.text.isNotEmpty &&
+                          longtute.text.isNotEmpty &&
                           description.text.isNotEmpty &&
                           _bannerImageUrl!.isNotEmpty) {
                         addRestaurant(
-                            restaurantNameController.text,
-                            description.text,
-                            lenght.text,
-                            restaurantLocationController.text);
+                          restaurantNameController.text,
+                          description.text,
+                          restaurantLocationController.text,
+                          latitute.text,
+                          longtute.text,
+                        );
 
                         restaurantNameController.clear();
                         restaurantLocationController.clear();
@@ -234,22 +253,24 @@ class _RestaurantPageState extends State<RestaurantPage> {
   }
 
   void _editRestaurant(context, String id, String name, String location,
-      String description2, String lenght2, String img) {
+      String description2, String latitude, String longitude, String img) {
     final TextEditingController restaurantNameController =
         TextEditingController();
     final TextEditingController restaurantLocationController =
         TextEditingController();
     final TextEditingController description = TextEditingController();
     final TextEditingController lenght = TextEditingController();
-    final TextEditingController rate = TextEditingController();
-    final TextEditingController rate_count = TextEditingController();
+
+    final TextEditingController latitute = TextEditingController();
+    final TextEditingController longtute = TextEditingController();
 
     gbImg = img;
 
     restaurantNameController.text = name;
     restaurantLocationController.text = location;
     description.text = description2;
-    lenght.text = lenght2;
+    latitute.text = latitude;
+    longtute.text = longitude;
 
     var size = MediaQuery.of(context).size;
 
@@ -314,9 +335,22 @@ class _RestaurantPageState extends State<RestaurantPage> {
                     padding: const EdgeInsets.symmetric(
                         vertical: 15.0, horizontal: 50),
                     child: TextField(
-                      controller: lenght,
+                      controller: latitute,
                       decoration: InputDecoration(
-                        labelText: 'Lenght',
+                        labelText: 'Latitude',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15.0, horizontal: 50),
+                    child: TextField(
+                      controller: longtute,
+                      decoration: InputDecoration(
+                        labelText: 'Longitude',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -360,13 +394,15 @@ class _RestaurantPageState extends State<RestaurantPage> {
                           if (restaurantNameController.text.isNotEmpty &&
                               restaurantLocationController.text.isNotEmpty &&
                               description.text.isNotEmpty &&
-                              lenght.text.isNotEmpty &&
+                              latitute.text.isNotEmpty &&
+                              longtute.text.isNotEmpty &&
                               _bannerImageUrl!.isNotEmpty) {
                             firestore.collection('restaurants').doc(id).update({
                               'name': restaurantNameController.text,
                               'location': restaurantLocationController.text,
                               'description': description.text,
-                              'lenght': lenght.text,
+                              'latitude': latitute.text,
+                              'longtitude': longtute.text,
                               'banner': _bannerImageUrl,
                             });
                             _bannerImageUrl = "";
@@ -512,6 +548,10 @@ class _RestaurantPageState extends State<RestaurantPage> {
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
+                                    //
+                                    // 'latitude': latitute.text,
+                                    // 'longtitude':longtute.text
+
                                     IconButton(
                                       icon: Icon(Icons.edit),
                                       onPressed: () => _editRestaurant(
@@ -520,7 +560,8 @@ class _RestaurantPageState extends State<RestaurantPage> {
                                           restaurant['name'],
                                           restaurant['location'],
                                           restaurant['desctiption'],
-                                          restaurant['lenght'],
+                                          restaurant['latitude'],
+                                          restaurant['longtitude'],
                                           restaurant['banner']),
                                     ),
                                     IconButton(

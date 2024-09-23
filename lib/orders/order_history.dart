@@ -4,7 +4,7 @@ import 'OrderCard.dart';
 import 'Orders.dart';
 import 'package:intl/intl.dart'; // For formatting dates
 
-class OrderScreen extends StatelessWidget {
+class OrderHistory extends StatelessWidget {
   final OrderService _orderService = OrderService();
 
   @override

@@ -204,6 +204,7 @@ class _FoodTypePageState extends State<MainMenuPage> {
   }
 
   void _editFoodType(String id, String type, img) {
+    _bannerImageUrl = img;
     foodTypeController.text = type;
     showDialog(
       context: context,

@@ -1,0 +1,17 @@
+[
+  {
+    "origin": [
+      "https://taxifood-f75ec.web.app"
+    ],
+    "method": [
+      "GET",
+      "POST",
+      "DELETE",
+      "PUT"
+    ],
+    "maxAgeSeconds": 3600,
+    "responseHeader": [
+      "Content-Type"
+    ]
+  }
+]

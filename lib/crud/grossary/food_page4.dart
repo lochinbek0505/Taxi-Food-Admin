@@ -70,7 +70,7 @@ class _FoodPageState extends State<FoodPage4> {
       'description': description.toString(),
       'rate': '0.0',
       'rate_count': 0,
-      'is_veg': isVeg2,
+      'veg': isVeg2,
     });
 
     setState(() {
@@ -375,7 +375,7 @@ class _FoodPageState extends State<FoodPage4> {
                             'description': foodDescriptionController.text,
                             'rate': rate,
                             'rate_count': rate_count,
-                            'is_veg': isVeg,
+                            'veg': isVeg,
                           });
                           Navigator.pop(context);
                         } else {
@@ -503,7 +503,7 @@ class _FoodPageState extends State<FoodPage4> {
                                       food['name'],
                                       food['price'],
                                       food['description'],
-                                      food['is_veg'],
+                                      food['veg'],
                                       food['banner'],
                                       food['rate'].toString(),
                                       food['rate_count'].toString()),

@@ -1,54 +1,55 @@
 import 'FoodItem.dart';
 
 class Order {
+  late final bool confirmed;
   final String customerName;
+  final String deliveryPrice;
+  final double latitude;
+  final double longitude;
   final String location;
   final String orderId;
-  final String phone;
   final String orderTime;
-  final double price;
   final List<FoodItem> orderedFood;
-  late final bool isConfirmed;
+  final String phone;
+  final String subTotal;
+  final String taxPrice;
+  final String total;
 
-  Order(
-    this.orderId, {
+  Order({
+    required this.confirmed,
     required this.customerName,
+    required this.deliveryPrice,
+    required this.latitude,
+    required this.longitude,
     required this.location,
-    required this.phone,
+    required this.orderId,
     required this.orderTime,
-    required this.price,
     required this.orderedFood,
-    required this.isConfirmed,
+    required this.phone,
+    required this.subTotal,
+    required this.taxPrice,
+    required this.total,
   });
 
-  factory Order.fromJson(Map<String, dynamic> json) {
-    var foodsFromJson = json['orderedFood'] as List<dynamic>;
-    List<FoodItem> foodList = foodsFromJson
-        .map(
-            (item) => FoodItem.fromJson(Map<String, dynamic>.from(item as Map)))
+  factory Order.fromMap(Map<dynamic, dynamic> map) {
+    var foodList = (map['orderedFood'] as List<dynamic>? ?? [])
+        .map((foodMap) => FoodItem.fromMap(foodMap as Map<dynamic, dynamic>))
         .toList();
 
     return Order(
-      json['orderId'],
-      customerName: json['customerName'] as String,
-      location: json['location'] as String,
-      phone: json['phone'] as String,
-      orderTime: json['orderTime'] as String,
-      price: (json['price'] as num).toDouble(),
+      confirmed: map['confirmed'] as bool? ?? false,
+      customerName: map['customerName'] as String? ?? '',
+      deliveryPrice: map['deliveryPrice'] as String? ?? '',
+      latitude: (map['latitute'] as num?)?.toDouble() ?? 0.0,
+      longitude: (map['longtute'] as num?)?.toDouble() ?? 0.0,
+      location: map['location'] as String? ?? '',
+      orderId: map['orderId'] as String? ?? '',
+      orderTime: map['orderTime'] as String? ?? '',
       orderedFood: foodList,
-      isConfirmed: json['isConfirmed'] as bool,
+      phone: map['phone'] as String? ?? '',
+      subTotal: map['subTotal'] as String? ?? '',
+      taxPrice: map['taxPrice'] as String? ?? '',
+      total: map['total'] as String? ?? '',
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'customerName': customerName,
-      'location': location,
-      'phone': phone,
-      'orderTime': orderTime,
-      'price': price,
-      'orderedFood': orderedFood.map((food) => food.toJson()).toList(),
-      'isConfirmed': isConfirmed,
-    };
   }
 }

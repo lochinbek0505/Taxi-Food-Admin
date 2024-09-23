@@ -1,27 +1,22 @@
 class FoodItem {
-  final String name;
-  final double price;
+  final int count;
   final String imageUrl;
+  final String name;
+  final String price;
 
   FoodItem({
+    required this.count,
+    required this.imageUrl,
     required this.name,
     required this.price,
-    required this.imageUrl,
   });
 
-  factory FoodItem.fromJson(Map<String, dynamic> json) {
+  factory FoodItem.fromMap(Map<dynamic, dynamic> map) {
     return FoodItem(
-      name: json['name'] as String,
-      price: (json['price'] as num).toDouble(),
-      imageUrl: json['imageUrl'] as String,
+      count: map['count'] as int? ?? 0,
+      imageUrl: map['imageUrl'] as String? ?? '',
+      name: map['name'] as String? ?? '',
+      price: map['price'] as String? ?? '',
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'price': price,
-      'imageUrl': imageUrl,
-    };
   }
 }

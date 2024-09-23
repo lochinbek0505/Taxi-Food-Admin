@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taxi_food_admin/crud/control.dart';
 import 'package:taxi_food_admin/orders/receive.dart';
+import 'package:taxi_food_admin/requerments.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,7 +11,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List _pages = [OrderScreen(), ControlPage()];
+  List _pages = [OrderScreen(), ControlPage(), Requerments()];
 
   int _selectedIndex = 0;
 
@@ -56,6 +57,15 @@ class _HomePageState extends State<HomePage> {
                   quarterTurns: -1,
                   child: Text("EDIT"),
                 )),
+            NavigationRailDestination(
+              icon: SizedBox(),
+              label: RotatedBox(
+                quarterTurns: -1,
+                child: Text(
+                  'MAIN',
+                ),
+              ),
+            ),
           ],
           selectedIndex: _selectedIndex,
           backgroundColor: Color(0xff2A5270),
