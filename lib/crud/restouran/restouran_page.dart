@@ -173,6 +173,14 @@ class _RestaurantPageState extends State<RestaurantPage> {
 
     var size = MediaQuery.of(context).size;
 
+    _bannerImageUrl = "";
+    _bannerImageUrl2 = "";
+    _bannerImageUrl3 = "";
+
+    _webImage = null;
+    _webImage2 = null;
+    _webImage3 = null;
+
     showDialog(
       context: context,
       builder: (
