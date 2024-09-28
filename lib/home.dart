@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:taxi_food_admin/crud/control.dart';
 import 'package:taxi_food_admin/orders/receive.dart';
 import 'package:taxi_food_admin/requerments.dart';
+import 'package:taxi_food_admin/users_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,7 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List _pages = [OrderScreen(), ControlPage(), Requerments()];
+  List _pages = [OrderScreen(), ControlPage(), Requerments(), UsersScreen()];
 
   int _selectedIndex = 0;
 
@@ -63,6 +64,15 @@ class _HomePageState extends State<HomePage> {
                 quarterTurns: -1,
                 child: Text(
                   'MAIN',
+                ),
+              ),
+            ),
+            NavigationRailDestination(
+              icon: SizedBox(),
+              label: RotatedBox(
+                quarterTurns: -1,
+                child: Text(
+                  'USERS',
                 ),
               ),
             ),

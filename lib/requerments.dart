@@ -14,6 +14,9 @@ class _RequermentsState extends State<Requerments> {
 
   final TextEditingController x1 = TextEditingController();
   final TextEditingController x2 = TextEditingController();
+
+  final TextEditingController y1 = TextEditingController();
+  final TextEditingController y2 = TextEditingController();
   final TextEditingController texee = TextEditingController();
 
   final TextEditingController delivery = TextEditingController();
@@ -39,45 +42,81 @@ class _RequermentsState extends State<Requerments> {
 
                 x1.text = restaurant['x1'];
                 x2.text = restaurant['x2'];
+                y1.text = restaurant['y1'];
+                y2.text = restaurant['y2'];
                 lat.text = restaurant['lat'];
                 lon.text = restaurant['lon'];
                 delivery.text = restaurant['del'];
                 texee.text = restaurant['tax'];
 
+                var size = MediaQuery.of(context).size;
+
                 return Column(
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 15.0, horizontal: 50),
-                      child: TextField(
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        controller: x1,
-                        decoration: InputDecoration(
-                          labelText: 'Category Size',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                          vertical: 15, horizontal: 50),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: size.width / 2.4,
+                            child: TextField(
+                              controller: x1,
+                              decoration: InputDecoration(
+                                labelText: 'Menu row size (only number)*',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                          Container(
+                            width: size.width / 2.4,
+                            child: TextField(
+                              controller: y1,
+                              decoration: InputDecoration(
+                                labelText: 'Menu column (only number) *',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 15.0, horizontal: 50),
-                      child: TextField(
-                        controller: x2,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        decoration: InputDecoration(
-                          labelText: 'Restouran Size',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                          vertical: 15, horizontal: 50),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: size.width / 2.4,
+                            child: TextField(
+                              controller: x2,
+                              decoration: InputDecoration(
+                                labelText: 'Restouran row size (only number)*',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                          Container(
+                            width: size.width / 2.4,
+                            child: TextField(
+                              controller: y2,
+                              decoration: InputDecoration(
+                                labelText: 'Restouran column (only number) *',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Padding(
@@ -155,11 +194,13 @@ class _RequermentsState extends State<Requerments> {
                           if (lat.text.isNotEmpty &&
                               lon.text.isNotEmpty &&
                               x1.text.isNotEmpty &&
+                              y1.text.isNotEmpty &&
                               x2!.text.isNotEmpty &&
+                              y2.text.isNotEmpty &&
                               delivery.text.isNotEmpty &&
                               texee.text.isNotEmpty) {
-                            addFood(lat.text, lon.text, x1.text, x2!.text,
-                                delivery.text, texee.text);
+                            addFood(lat.text, lon.text, x1.text, y1.text,
+                                x2!.text, y2.text, delivery.text, texee.text);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -341,8 +382,8 @@ class _RequermentsState extends State<Requerments> {
   // }
   //
 
-  Future<void> addFood(String lat, String long, String x1, String x2,
-      String del, String tax) async {
+  Future<void> addFood(String lat, String long, String x1, String y1, String x2,
+      String y2, String del, String tax) async {
     // if (_bannerImage != null) {
     //   _bannerUrl = await uploadBanner(_webImage!);
     // }
@@ -355,7 +396,9 @@ class _RequermentsState extends State<Requerments> {
         'lat': lat,
         'lon': long,
         'x1': x1,
+        'y1': y1,
         'x2': x2,
+        'y2': y2,
         'del': del,
         'tax': tax,
       });

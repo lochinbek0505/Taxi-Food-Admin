@@ -5,8 +5,8 @@ import 'food_page.dart'; // Import the food page
 
 class FoodTypePage extends StatefulWidget {
   final String restaurantId;
-
-  FoodTypePage({required this.restaurantId});
+  final String name;
+  FoodTypePage({required this.restaurantId, required this.name});
 
   @override
   _FoodTypePageState createState() => _FoodTypePageState();
@@ -35,7 +35,7 @@ class _FoodTypePageState extends State<FoodTypePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Edit Food Type"),
+          title: Text("Edit Menu"),
           content: Container(
             width: 300,
             height: 150,
@@ -114,7 +114,7 @@ class _FoodTypePageState extends State<FoodTypePage> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
-          "Food Types",
+          widget.name,
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.indigoAccent,
@@ -127,7 +127,7 @@ class _FoodTypePageState extends State<FoodTypePage> {
             child: TextField(
               controller: foodTypeController,
               decoration: InputDecoration(
-                labelText: 'Food type',
+                labelText: 'Menu *',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -156,7 +156,7 @@ class _FoodTypePageState extends State<FoodTypePage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
                 child: Text(
-                  "Add food type",
+                  "Add menu",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 19,
@@ -196,6 +196,7 @@ class _FoodTypePageState extends State<FoodTypePage> {
                                   builder: (context) => FoodPage(
                                         restaurantId: widget.restaurantId,
                                         foodTypeId: foodType.id,
+                                        name: foodType['type'],
                                       )),
                             );
                           },

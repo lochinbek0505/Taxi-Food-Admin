@@ -9,8 +9,12 @@ import 'package:image_picker_web/image_picker_web.dart';
 class FoodPage extends StatefulWidget {
   final String restaurantId;
   final String foodTypeId;
+  final String name;
 
-  FoodPage({required this.restaurantId, required this.foodTypeId});
+  FoodPage(
+      {required this.restaurantId,
+      required this.foodTypeId,
+      required this.name});
 
   @override
   _FoodPageState createState() => _FoodPageState();
@@ -57,8 +61,8 @@ class _FoodPageState extends State<FoodPage> {
     setState(() {});
   }
 
-  Future<void> addFood(
-      String name, String price, String description, bool isVeg2) async {
+  Future<void> addFood(String name, String price, String description,
+      String rate, String count, bool isVeg2, String img) async {
     // if (_bannerImage != null) {
     //   _bannerUrl = await uploadBanner(_webImage!);
     // }
@@ -74,12 +78,12 @@ class _FoodPageState extends State<FoodPage> {
         .collection('foods')
         .doc(name)
         .set({
-      'banner': _bannerImageUrl ?? '', // Save the banner URL
+      'banner': img ?? '', // Save the banner URL
       'name': name.toString(),
       'price': price.toString(),
       'description': description.toString(),
-      'rate': '0.0',
-      'rate_count': 0,
+      'rate': rate.isNotEmpty ? rate : "0.0",
+      'rate_count': count.isNotEmpty ? int.parse(count) : 0,
       'veg': isVeg2,
     });
 
@@ -91,10 +95,17 @@ class _FoodPageState extends State<FoodPage> {
   }
 
   void addRestouran(context) {
+    List<bool> isSelected = [
+      true,
+      false,
+    ];
+
     final TextEditingController foodNameController = TextEditingController();
     final TextEditingController foodPriceController = TextEditingController();
     final TextEditingController foodDescriptionController =
         TextEditingController();
+    final TextEditingController starController = TextEditingController();
+    final TextEditingController noCountController = TextEditingController();
 
     bool isVeg = false;
     var size = MediaQuery.of(context).size;
@@ -102,153 +113,215 @@ class _FoodPageState extends State<FoodPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Add Restaurant"),
-          insetPadding: EdgeInsets.symmetric(horizontal: 100, vertical: 50),
-          content: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    width: size.width,
-                    height: 50,
-                    padding: EdgeInsets.symmetric(horizontal: 50),
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(15)),
-                    child: ElevatedButton.icon(
-                      icon: Icon(Icons.image),
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          backgroundColor: Colors.indigoAccent,
-                          iconColor: Colors.white),
-                      onPressed: _pickImage,
-                      label: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                        child: Text(
-                          "Banner image",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15.0, horizontal: 50),
-                    child: TextField(
-                      controller: foodNameController,
-                      decoration: InputDecoration(
-                        labelText: 'Food Name',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15.0, horizontal: 50),
-                    child: TextField(
-                      controller: foodPriceController,
-                      decoration: InputDecoration(
-                        labelText: 'Food Price',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15.0, horizontal: 50),
-                    child: TextField(
-                      controller: foodDescriptionController,
-                      decoration: InputDecoration(
-                        labelText: 'Food Description',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15.0, horizontal: 50),
-                    child: StatefulBuilder(builder: (context, setState) {
-                      return SwitchListTile(
-                        title: Text('For Veg'),
-                        value: isVeg,
-                        onChanged: (bool value) {
-                          setState(() {
-                            isVeg = value;
-                          });
-                        },
-                      );
-                    }),
-                  ),
-                  Container(
-                    width: size.width,
-                    height: 50,
-                    padding: EdgeInsets.symmetric(horizontal: 50),
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(15)),
-                    child: ElevatedButton.icon(
-                      icon: Icon(Icons.save),
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          backgroundColor: Colors.indigoAccent,
-                          iconColor: Colors.white),
-                      onPressed: () {
-                        if (foodNameController.text.isNotEmpty &&
-                            foodDescriptionController.text.isNotEmpty &&
-                            foodPriceController.text.isNotEmpty &&
-                            _bannerImageUrl!.isNotEmpty) {
-                          print(_bannerImageUrl);
-
-                          addFood(
-                              foodNameController.text,
-                              foodPriceController.text,
-                              foodDescriptionController.text,
-                              isVeg);
-
-                          foodNameController.clear();
-                          foodDescriptionController.clear();
-                          foodPriceController.clear();
-                          _bannerImageUrl = "";
-                          Navigator.pop(context);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Please fill in all fields!'),
-                            ),
-                          );
-                        }
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: Text("Add Food"),
+            insetPadding: EdgeInsets.symmetric(horizontal: 100, vertical: 50),
+            content: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        await _pickImage();
+                        setState(
+                            () {}); // Refresh the UI to show the selected image
                       },
-                      label: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                        child: Text(
-                          "ADD FOOD",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold,
+                      child: _webImage == null
+                          ? Icon(
+                              Icons.image,
+                              size: 150,
+                            )
+                          : Image.memory(
+                              _webImage!, // Display the selected image
+                              width: 150,
+                              height: 150,
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                    SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15, horizontal: 50),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: size.width / 2.8,
+                            child: TextField(
+                              controller: foodNameController,
+                              decoration: InputDecoration(
+                                labelText: 'Food Name *',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: size.width / 2.8,
+                            child: TextField(
+                              controller: foodPriceController,
+                              decoration: InputDecoration(
+                                labelText: 'Food Price (only number) *',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15.0, horizontal: 50),
+                      child: TextField(
+                        controller: foodDescriptionController,
+                        decoration: InputDecoration(
+                          labelText: 'Food Description *',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15, horizontal: 50),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: size.width / 2.8,
+                            child: TextField(
+                              controller: starController,
+                              decoration: InputDecoration(
+                                labelText: 'Star Rating (only number)',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: size.width / 2.8,
+                            child: TextField(
+                              controller: noCountController,
+                              decoration: InputDecoration(
+                                labelText: 'No of People (only number)',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Wrap ToggleButtons inside StatefulBuilder to allow state change
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15, horizontal: 50),
+                      child: StatefulBuilder(
+                        builder: (BuildContext context, StateSetter setState) {
+                          return ToggleButtons(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 50, vertical: 8.0),
+                                child: Text('Veg'),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 50, vertical: 8.0),
+                                child: Text('Non Veg'),
+                              ),
+                            ],
+                            isSelected: isSelected,
+                            onPressed: (int index) {
+                              setState(() {
+                                for (int i = 0; i < isSelected.length; i++) {
+                                  isSelected[i] = i == index;
+                                }
+                                isVeg = isSelected[
+                                    0]; // Update isVeg based on selection
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(8.0),
+                            selectedBorderColor: Colors.green,
+                            selectedColor: Colors.white,
+                            fillColor: Colors.green,
+                            color: Colors.black,
+                          );
+                        },
+                      ),
+                    ),
+                    Container(
+                      width: size.width,
+                      height: 50,
+                      padding: EdgeInsets.symmetric(horizontal: 50),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15)),
+                      child: ElevatedButton.icon(
+                        icon: Icon(Icons.save),
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                            ),
+                            backgroundColor: Colors.indigoAccent,
+                            iconColor: Colors.white),
+                        onPressed: () {
+                          if (foodNameController.text.isNotEmpty &&
+                              foodDescriptionController.text.isNotEmpty &&
+                              foodPriceController.text.isNotEmpty &&
+                              _bannerImageUrl!.isNotEmpty) {
+                            print(_bannerImageUrl);
+
+                            addFood(
+                                foodNameController.text,
+                                foodPriceController.text,
+                                foodDescriptionController.text,
+                                starController.text,
+                                noCountController.text,
+                                isVeg,
+                                // Pass whether it is Veg or Non Veg
+                                _bannerImageUrl!);
+
+                            foodNameController.clear();
+                            foodDescriptionController.clear();
+                            foodPriceController.clear();
+                            _bannerImageUrl = "";
+                            _webImage = null;
+                            Navigator.pop(context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Please fill in all fields!'),
+                              ),
+                            );
+                          }
+                        },
+                        label: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                          child: Text(
+                            "ADD FOOD",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
+          );
+        });
       },
     );
   }
@@ -257,159 +330,256 @@ class _FoodPageState extends State<FoodPage> {
 
   /// Edit Food Document
   void _editFood(String id, String name, String price, String description,
-      bool isVeg, String banner, String rate, String rate_count) {
+      bool veg, String banner, String rate, String rate_count) {
+    List<bool> isSelected = [
+      veg,
+      !veg,
+    ];
+
+    print("$veg   $isSelected");
+    _webImage = null;
     final TextEditingController foodNameController = TextEditingController();
     final TextEditingController foodPriceController = TextEditingController();
     final TextEditingController foodDescriptionController =
         TextEditingController();
+    final TextEditingController starController = TextEditingController();
+    final TextEditingController noCountController = TextEditingController();
 
     // bool isVeg = false;
     var size = MediaQuery.of(context).size;
     foodNameController.text = name;
     foodPriceController.text = price.toString();
     foodDescriptionController.text = description;
+    starController.text = rate;
+    noCountController.text = rate_count;
     _bannerImageUrl = banner;
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Edit Food"),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    _pickImage();
-                  },
-                  child: Image.network(
-                    banner,
-                    height: 150,
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            insetPadding: EdgeInsets.symmetric(horizontal: 100, vertical: 50),
+            title: Text("Edit Food"),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      await _pickImage();
+
+                      setState(() {});
+                    },
+                    child: _webImage == null
+                        ? Image.network(
+                            banner,
+                            width: 150,
+                          )
+                        : Image.memory(
+                            _webImage!, // Display the selected image
+                            width: 150,
+                            height: 150,
+                            fit: BoxFit.cover,
+                          ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 15.0, horizontal: 50),
-                  child: TextField(
-                    controller: foodNameController,
-                    decoration: InputDecoration(
-                      labelText: 'Food Name',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 15.0, horizontal: 50),
-                  child: TextField(
-                    controller: foodPriceController,
-                    decoration: InputDecoration(
-                      labelText: 'Food Price',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 15.0, horizontal: 50),
-                  child: TextField(
-                    controller: foodDescriptionController,
-                    decoration: InputDecoration(
-                      labelText: 'Food Description',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 15.0, horizontal: 50),
-                  child: StatefulBuilder(builder: (context, setState) {
-                    return SwitchListTile(
-                      title: Text('For Veg'),
-                      value: isVeg,
-                      onChanged: (bool value) {
-                        setState(() {
-                          isVeg = value;
-                        });
-                      },
-                    );
-                  }),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 15,
-                  ),
-                  child: Container(
-                    width: size.width,
-                    height: 50,
-                    padding: EdgeInsets.symmetric(horizontal: 50),
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(15)),
-                    child: ElevatedButton.icon(
-                      icon: Icon(Icons.edit),
-                      label: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                        child: Text(
-                          "Edit",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold,
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 50),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: size.width / 2.8,
+                          child: TextField(
+                            controller: foodNameController,
+                            decoration: InputDecoration(
+                              labelText: 'Food Name *',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          backgroundColor: Colors.indigoAccent,
-                          iconColor: Colors.white),
-                      onPressed: () {
-                        // 'banner': _bannerImageUrl,
-                        // 'lenght': lenght,
-                        // 'desctiption': description,
-                        if (foodNameController.text.isNotEmpty &&
-                            foodDescriptionController.text.isNotEmpty &&
-                            foodPriceController.text.isNotEmpty &&
-                            _bannerImageUrl!.isNotEmpty) {
-                          firestore
-                              .collection('restaurants')
-                              .doc(widget.restaurantId)
-                              .collection('types_of_food')
-                              .doc(widget.foodTypeId)
-                              .collection('foods')
-                              .doc(id)
-                              .update({
-                            'banner': _bannerImageUrl,
-                            'name': foodNameController.text,
-                            'price': foodPriceController.text,
-                            'description': foodDescriptionController.text,
-                            'rate': rate,
-                            'rate_count': int.parse(rate_count),
-                            'veg': isVeg,
-                          });
-                          Navigator.pop(context);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Please fill in all fields !'),
+                        Container(
+                          width: size.width / 2.8,
+                          child: TextField(
+                            controller: foodPriceController,
+                            decoration: InputDecoration(
+                              labelText: 'Food Price (only number) *',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
-                          );
-                        }
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15.0, horizontal: 50),
+                    child: TextField(
+                      controller: foodDescriptionController,
+                      decoration: InputDecoration(
+                        labelText: 'Food Description *',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 50),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: size.width / 2.8,
+                          child: TextField(
+                            controller: starController,
+                            decoration: InputDecoration(
+                              labelText: 'Star Rating (only number)',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: size.width / 2.8,
+                          child: TextField(
+                            controller: noCountController,
+                            decoration: InputDecoration(
+                              labelText: 'No of People (only number)',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Wrap ToggleButtons inside StatefulBuilder to allow state change
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 50),
+                    child: StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) {
+                        return ToggleButtons(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 50, vertical: 8.0),
+                              child: Text('Veg'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 50, vertical: 8.0),
+                              child: Text('Non Veg'),
+                            ),
+                          ],
+                          isSelected: isSelected,
+                          onPressed: (int index) {
+                            setState(() {
+                              for (int i = 0; i < isSelected.length; i++) {
+                                isSelected[i] = i == index;
+                              }
+                              isVeg = isSelected[
+                                  0]; // Update isVeg based on selection
+                            });
+                          },
+                          borderRadius: BorderRadius.circular(8.0),
+                          selectedBorderColor: Colors.green,
+                          selectedColor: Colors.white,
+                          fillColor: Colors.green,
+                          color: Colors.black,
+                        );
                       },
                     ),
                   ),
-                )
-              ],
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 15,
+                    ),
+                    child: Container(
+                      width: size.width,
+                      height: 50,
+                      padding: EdgeInsets.symmetric(horizontal: 50),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15)),
+                      child: ElevatedButton.icon(
+                        icon: Icon(Icons.edit),
+                        label: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                          child: Text(
+                            "Edit",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                            ),
+                            backgroundColor: Colors.indigoAccent,
+                            iconColor: Colors.white),
+                        onPressed: () async {
+                          // 'banner': _bannerImageUrl,
+                          // 'lenght': lenght,
+                          // 'desctiption': description,
+                          if (foodNameController.text.isNotEmpty &&
+                              foodDescriptionController.text.isNotEmpty &&
+                              foodPriceController.text.isNotEmpty &&
+                              _bannerImageUrl!.isNotEmpty) {
+                            // main_foods
+                            try {
+                              await firestore
+                                  .collection('restaurants')
+                                  .doc(widget.restaurantId)
+                                  .collection('types_of_food')
+                                  .doc(widget.foodTypeId)
+                                  .collection('foods')
+                                  .doc(id)
+                                  .update({
+                                'banner': _bannerImageUrl,
+                                'name': foodNameController.text,
+                                'price': foodPriceController.text,
+                                'description': foodDescriptionController.text,
+                                'rate': starController.text.isNotEmpty
+                                    ? starController.text
+                                    : "0.0",
+                                'rate_count': noCountController.text.isNotEmpty
+                                    ? int.parse(noCountController.text)
+                                    : 0,
+                                'veg': isVeg,
+                              });
+                            } catch (e) {
+                              print(e);
+                            }
+                            Navigator.pop(context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Please fill in all fields !'),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        });
       },
     );
   }
@@ -433,7 +603,7 @@ class _FoodPageState extends State<FoodPage> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
-          "Foods",
+          widget.name,
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.indigoAccent,
@@ -528,15 +698,21 @@ class _FoodPageState extends State<FoodPage> {
                               children: [
                                 IconButton(
                                   icon: Icon(Icons.edit),
-                                  onPressed: () => _editFood(
-                                      food.id,
-                                      food['name'],
-                                      food['price'],
-                                      food['description'],
-                                      food['veg'],
-                                      food['banner'],
-                                      food['rate'].toString(),
-                                      food['rate_count'].toString()),
+                                  onPressed: () {
+                                    try {
+                                      _editFood(
+                                          food.id,
+                                          food['name'],
+                                          food['price'],
+                                          food['description'],
+                                          food['veg'],
+                                          food['banner'],
+                                          food['rate'].toString(),
+                                          food['rate_count'].toString());
+                                    } catch (e) {
+                                      print("XATOLIK XATOLIK $e");
+                                    }
+                                  },
                                 ),
                                 IconButton(
                                   icon: Icon(Icons.delete),
